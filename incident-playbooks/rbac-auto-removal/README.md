@@ -68,3 +68,19 @@ ARM DELETE roleAssignment
 
 - [Privileged Access Escalation Detection](../../privileged-access-escalation.md)
 
+---
+
+## Evidence & Screenshots
+
+| Screenshot | Description |
+|----------|-------------|
+| 01 | Sentinel incident with RBAC escalation alert |
+| 02 | Automation rule triggering on tag |
+| 03 | Logic App playbook design and successful run |
+| 04 | Managed Identity RBAC at subscription scope |
+| 05 | Managed Identity Sentinel permissions |
+| 06 | Activity log showing role created → deleted |
+
+All remediation actions were executed by the Logic App managed identity.
+
+
