@@ -154,3 +154,12 @@ This playbook is intentionally:
 - Aligned with identity-as-perimeter strategy
 
 It reflects real-world security operations in regulated cloud environments.
+
+## Automated Remediation
+
+This detection is paired with a Sentinel SOAR playbook that supports
+human-approved automated RBAC removal.
+
+See:
+incident-playbooks/rbac-auto-removal/
+
