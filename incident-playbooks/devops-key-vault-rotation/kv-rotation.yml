@@ -7,8 +7,8 @@ pool:
 steps:
 - task: AzureKeyVault@2
   inputs:
-    azureSubscription: 'sc-kv-rotation-lab'   
-    KeyVaultName: 'sp-ado-kv-reader'     
+    azureSubscription: 'sp-ado-kv-reader'   
+    KeyVaultName: 'kv-prodtest-secrets'     
     SecretsFilter: 'cicd-pipeline-secret'
     RunAsPreJob: true
 
