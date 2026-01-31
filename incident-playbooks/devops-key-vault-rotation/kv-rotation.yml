@@ -1,0 +1,16 @@
+trigger:
+- main
+
+pool:
+  vmImage: ubuntu-latest
+
+steps:
+- task: AzureKeyVault@2
+  inputs:
+    azureSubscription: 'sc-kv-rotation-lab'   
+    KeyVaultName: 'sp-ado-kv-reader'     
+    SecretsFilter: 'cicd-pipeline-secret'
+    RunAsPreJob: true
+
+- script: |
+    echo "Pipeline retrieved secret successfully"
