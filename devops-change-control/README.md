@@ -46,4 +46,14 @@ Approval ≠ Authorization.
 ---
 
 ## Repository Structure
-
+devops-change-control/
+├── architecture/ # Security architecture & threat modeling
+├── bicep/ # Infrastructure under governance
+├── policies/ # Azure Policy deny guardrails
+├── pipelines/ # Azure DevOps pipeline YAML
+├── docs/ # Design and implementation docs
+├── evidence/ # Screenshot-based proof
+├── sentinel/ # Detection logic (KQL)
+├── defender/ # Incident triage narratives
+├── screenshots2/ # Raw supporting screenshots
+└── README.md
