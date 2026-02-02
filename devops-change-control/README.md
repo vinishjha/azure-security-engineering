@@ -57,3 +57,33 @@ devops-change-control/
 ├── defender/ # Incident triage narratives
 ├── screenshots2/ # Raw supporting screenshots
 └── README.md
+
+
+---
+
+## Why This Matters in Aerospace & Regulated Environments
+
+Aerospace environments require:
+
+- Preventative controls (not detective-only)
+- Separation of duties
+- Immutable audit trails
+- Proven enforcement, not policy intent
+
+This architecture ensures:
+
+- CI/CD cannot bypass governance
+- Approvals do not override security
+- Every denied change is auditable
+- Governance violations become SOC-visible signals
+
+This aligns with NIST 800-53, NIST 800-171, DFARS, CMMC, and internal airworthiness controls.
+
+---
+
+## Audience
+
+- Azure Security Engineers
+- Cloud Security Architects
+- DevSecOps Engineers
+- Aerospace / Defense security teams
