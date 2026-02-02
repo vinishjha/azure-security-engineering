@@ -234,12 +234,3 @@ This repository shows:
 - how incidents are enforced
 - how systems withstand audits
 
----
-
-## Final Note
-
-This repository is intentionally structured as a **security architecture portfolio**, not a code dump.
-
-Every folder exists to answer one question:
-
-> **“Can this person be trusted to protect production in a regulated cloud?”**
