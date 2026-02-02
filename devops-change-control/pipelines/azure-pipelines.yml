@@ -1,0 +1,171 @@
+trigger: none
+
+variables:
+  agentPool: 'self-hosted-local'
+  azureServiceConnection: 'sc-prod-deployer1'
+  rg_protected: 'rg-prod-test'
+  st_protected: 'stsecdiagtest'
+  templatePath: 'devops-change-control/bicep/main.bicep'
+
+  # Logs Ingestion (DCE + DCR) for DevOps approval markers
+  ingestEndpoint: 'https://dce-devops-audit-vv09.eastus-1.ingest.monitor.azure.com'
+  dcrImmutableId: 'dcr-8ed4bae66f1c40499635251d92f882af'
+  streamName: 'Custom-DevOpsApprovals_CL'
+  ingestApiVersion: '2023-01-01'
+
+stages:
+- stage: WhatIf
+  displayName: What-If (advisory)
+  jobs:
+  - job: whatif
+    displayName: What-If Deployment (non-blocking)
+    pool:
+      name: $(agentPool)
+    steps:
+    - checkout: self
+      clean: true
+
+    - task: AzureCLI@2
+      displayName: "What-if (preview changes) — continue even if denied"
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -uo pipefail
+
+          echo "Agent: $AGENT_NAME"
+          echo "Build.SourcesDirectory: $(Build.SourcesDirectory)"
+          echo "Target RG: $(rg_protected)"
+          echo "Storage: $(st_protected)"
+
+          TEMPLATE="$(Build.SourcesDirectory)/$(templatePath)"
+          echo "Using template: $TEMPLATE"
+          ls -la "$(Build.SourcesDirectory)/devops-change-control/bicep" || true
+
+          set +e
+          az deployment group what-if \
+            --resource-group "$(rg_protected)" \
+            --template-file "$TEMPLATE" \
+            --parameters storageName="$(st_protected)" publicNetworkAccess="Enabled" allowBlobPublicAccess=true
+          RC=$?
+          set -e
+
+          if [ $RC -ne 0 ]; then
+            echo "WARNING: what-if returned exit code $RC (often policy deny). Continuing by design."
+          else
+            echo "What-if succeeded."
+          fi
+
+          exit 0
+
+- stage: Approval
+  displayName: Approval Gate (prod)
+  dependsOn: WhatIf
+  condition: succeeded()
+  jobs:
+  - job: approve
+    displayName: Manual approval required
+    pool: server
+    steps:
+    - task: ManualValidation@0
+      inputs:
+        instructions: |
+          Review the What-If output.
+          Approve to proceed with PROD deployment attempt (expected policy deny).
+        onTimeout: reject
+        timeoutInMinutes: 60
+
+- stage: Deploy
+  displayName: Deploy (prod - enforced)
+  dependsOn: Approval
+  condition: succeeded()
+  jobs:
+  - job: deploy
+    displayName: Deploy (post-approval)
+    pool:
+      name: $(agentPool)
+    steps:
+    - checkout: self
+      clean: true
+
+    # ✅ This is the key step: write an "approval marker" into Log Analytics via Logs Ingestion API
+    - task: AzureCLI@2
+      displayName: "Emit Approval Marker to Log Analytics (DevOpsApprovals_CL)"
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -euo pipefail
+
+          INGEST_ENDPOINT="$(ingestEndpoint)"
+          DCR_IMMUTABLE_ID="$(dcrImmutableId)"
+          STREAM="$(streamName)"
+          API_VERSION="$(ingestApiVersion)"
+
+          NOW="$(date -u +"%Y-%m-%dT%H:%M:%S.%3NZ")"
+          RUN_ID="$(Build.BuildId)"
+          PIPELINE="$(Build.DefinitionName)"
+          REPO="$(Build.Repository.Name)"
+          BRANCH="$(Build.SourceBranchName)"
+          APPROVER="$(Build.RequestedFor)"
+
+          echo "Creating approval marker:"
+          echo "  TimeGenerated: $NOW"
+          echo "  RunId: $RUN_ID"
+          echo "  Pipeline: $PIPELINE"
+          echo "  ApprovedBy: $APPROVER"
+          echo "  Repo: $REPO"
+          echo "  Branch: $BRANCH"
+          echo "  Stage: Approval"
+
+          TOKEN="$(az account get-access-token --resource https://monitor.azure.com/ --query accessToken -o tsv)"
+          URL="$INGEST_ENDPOINT/dataCollectionRules/$DCR_IMMUTABLE_ID/streams/$STREAM?api-version=$API_VERSION"
+
+          BODY="$(cat <<EOF
+          [
+            {
+              "TimeGenerated": "$NOW",
+              "RunId": "$RUN_ID",
+              "Pipeline": "$PIPELINE",
+              "ApprovedBy": "$APPROVER",
+              "Stage": "Approval",
+              "Repo": "$REPO",
+              "Branch": "$BRANCH"
+            }
+          ]
+          EOF
+          )"
+
+          echo "Posting to: $URL"
+          HTTP_CODE="$(curl -sS -X POST "$URL" \
+            -H "Authorization: Bearer $TOKEN" \
+            -H "Content-Type: application/json" \
+            -d "$BODY" \
+            -o /dev/null \
+            -w "%{http_code}")"
+
+          echo "Ingestion HTTP status: $HTTP_CODE"
+          if [ "$HTTP_CODE" != "204" ]; then
+            echo "ERROR: Expected 204 from ingestion API, got $HTTP_CODE"
+            exit 1
+          fi
+
+    - task: AzureCLI@2
+      displayName: "Deploy (expected policy deny)"
+      inputs:
+        azureSubscription: $(azureServiceConnection)
+        scriptType: bash
+        scriptLocation: inlineScript
+        inlineScript: |
+          set -euo pipefail
+
+          echo "Deploying to RG: $(rg_protected)"
+          TEMPLATE="$(Build.SourcesDirectory)/$(templatePath)"
+          echo "Using template: $TEMPLATE"
+
+          az deployment group create \
+            --resource-group "$(rg_protected)" \
+            --template-file "$TEMPLATE" \
+            --parameters storageName="$(st_protected)" publicNetworkAccess="Enabled" allowBlobPublicAccess=true

@@ -1,0 +1,12 @@
+# Activity Log Forwarding (Prod → Central LAW)
+
+## Goal
+Ensure control-plane operations from `sub-prod-workload` are visible in the central security workspace (`law-central-security`) where Microsoft Sentinel is enabled.
+
+## Implementation
+Configured an Activity Log diagnostic setting on `sub-prod-workload` to send categories including Administrative and Policy to the central Log Analytics workspace.
+
+## Why
+- Centralized audit trail across subscriptions
+- Required for detecting policy denials, RBAC changes, and deployment events
+- Enables incident creation and investigation in Sentinel/Defender

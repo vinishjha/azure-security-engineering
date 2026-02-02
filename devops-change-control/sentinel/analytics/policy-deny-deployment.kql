@@ -1,0 +1,21 @@
+// Detect deployments denied by Azure Policy (high-signal control-plane event)
+// Focus: production subscription, protected scope
+AzureActivity
+| where TimeGenerated > ago(24h)
+| where SubscriptionId == "e2ef35d2-968b-41e7-add2-3ef9e2e1b283"   // sub-prod-workload
+| where OperationNameValue has "MICROSOFT.RESOURCES/DEPLOYMENTS/WRITE"
+| where ActivityStatusValue in ("Failed","Failure")
+| extend props = parse_json(Properties)
+| extend statusMessage = tostring(props.statusMessage)
+| where statusMessage has "RequestDisallowedByPolicy"
+| project
+    TimeGenerated,
+    SubscriptionId,
+    ResourceGroup,
+    Caller,
+    CallerIpAddress,
+    OperationNameValue,
+    ActivityStatusValue,
+    statusMessage,
+    ResourceId
+| order by TimeGenerated desc

@@ -1,0 +1,24 @@
+{
+  "properties": {
+    "displayName": "Deny Storage public exposure (Public network or blob public access)",
+    "policyType": "Custom",
+    "mode": "Indexed",
+    "description": "Denies storage accounts that enable public network access or allow blob public access in protected scope.",
+    "metadata": { "category": "Storage" },
+    "parameters": {},
+    "policyRule": {
+      "if": {
+        "allOf": [
+          { "field": "type", "equals": "Microsoft.Storage/storageAccounts" },
+          {
+            "anyOf": [
+              { "field": "Microsoft.Storage/storageAccounts/publicNetworkAccess", "equals": "Enabled" },
+              { "field": "Microsoft.Storage/storageAccounts/allowBlobPublicAccess", "equals": true }
+            ]
+          }
+        ]
+      },
+      "then": { "effect": "deny" }
+    }
+  }
+}
