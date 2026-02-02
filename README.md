@@ -44,6 +44,10 @@ They work **because** the architecture enforces:
 This repository should be read as a **security platform story**, not a collection of scripts.
 
 
+
+
+---
+
 # Azure Security Engineering Portfolio  
 ## Preventative Controls, SOAR Enforcement & Regulated Cloud Architecture (NDA-Safe)
 
