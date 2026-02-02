@@ -1,5 +1,7 @@
 ## Architectural Context (What This Repository Represents)
 
+📁 **`landing-zone-architecture/`**
+
 This repository is built on top of a **deliberate, security-owned Azure landing zone architecture** designed for **regulated environments** (aerospace, industrial, critical infrastructure).
 
 Before any playbooks, pipelines, or detections were created, the foundation was designed so that **security is enforced by architecture**, not by manual processes or human trust.
