@@ -1,3 +1,49 @@
+## Architectural Context (What This Repository Represents)
+
+This repository is built on top of a **deliberate, security-owned Azure landing zone architecture** designed for **regulated environments** (aerospace, industrial, critical infrastructure).
+
+Before any playbooks, pipelines, or detections were created, the foundation was designed so that **security is enforced by architecture**, not by manual processes or human trust.
+
+At a high level, this architecture establishes:
+
+- **Clear separation of duties** between platform security and application workloads  
+- **Identity as the primary control plane**, not the network  
+- **Preventative guardrails before detection**, not alert-only security  
+- **Centralized, tamper-resistant evidence collection** owned by security  
+- **Explicit blast-radius containment** for failure and compromise scenarios  
+
+### Foundational Design Principles
+
+- **Platform Security vs Workload Isolation**  
+  Security controls (logging, policy, detection, automation) live in a dedicated platform subscription that workloads cannot disable or bypass.
+
+- **Identity-First Trust Model**  
+  Platform identities, workload identities, and pipeline identities are intentionally scoped and separated. Authorization is explicit and auditable.
+
+- **Intentional Network Exposure**  
+  Network exposure is allowed only when explicit, observable, and reviewable — not accidental or implicit.
+
+- **Centralized Logging as Evidence**  
+  Telemetry is collected centrally using enforced ingestion paths and retained as durable security evidence, not just troubleshooting logs.
+
+- **Assume Breach, Control Blast Radius**  
+  The architecture assumes compromise is possible and focuses on limiting impact through subscription boundaries, policy enforcement, and independent security ownership.
+
+### Why This Matters
+
+All projects in this repository — DevOps change control, Sentinel detections, SOAR playbooks, identity enforcement, and guardrails — are **downstream of this foundation**.
+
+They are not bolt-on controls.
+
+They work **because** the architecture enforces:
+- who can act
+- where they can act
+- how far actions can propagate
+- and how every action is recorded
+
+This repository should be read as a **security platform story**, not a collection of scripts.
+
+
 # Azure Security Engineering Portfolio  
 ## Preventative Controls, SOAR Enforcement & Regulated Cloud Architecture (NDA-Safe)
 
