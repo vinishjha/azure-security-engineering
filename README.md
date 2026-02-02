@@ -236,18 +236,6 @@ This repository shows:
 
 ---
 
-## What This Repository Says About the Engineer
-
-A reviewer should conclude:
-
-- This engineer understands Azure deeply (control plane, identity, policy)
-- This engineer designs **preventative controls**, not just alerts
-- This engineer builds SOAR that is safe, reversible, and auditable
-- This engineer can operate in regulated, high-impact environments
-- This engineer documents failures honestly and learns from them
-
----
-
 ## Final Note
 
 This repository is intentionally structured as a **security architecture portfolio**, not a code dump.
