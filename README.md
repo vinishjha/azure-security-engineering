@@ -1,39 +1,213 @@
-# Regulated Azure Security Architecture Portfolio (NDA-Safe)
+# Azure Security Engineering Portfolio  
+## Preventative Controls, SOAR Enforcement & Regulated Cloud Architecture (NDA-Safe)
 
-This repository demonstrates **senior-level Azure security architecture** for a **regulated enterprise environment**.
+---
 
-It reflects how security is **designed, governed, and operated** at scale — not tool demos or labs.
+## Overview
 
-## Assumed Environment
+This repository is a **portfolio-grade, NDA-safe collection of Azure security engineering projects** that demonstrate how **regulated enterprises (aerospace / industrial / critical infrastructure)** design, enforce, and operate cloud security controls.
 
-- Regulated industry (aerospace / industrial)
-- ~30–100 Azure subscriptions
-- Centralized security & logging platform
-- Separation between platform and workload ownership
-- Identity-first (Zero Trust) security model
+The work here reflects **how I build security systems in practice** as a **high mid-level Azure Security Engineer** — not demos, not tutorials, and not vendor marketing examples.
 
-## How to Review This Repository
+The projects progress deliberately from:
 
-Start here:
+1. **Preventative platform controls (guardrails & change control)**  
+2. **Detection → response → enforcement playbooks (SOAR)**  
+3. **Tier-0 identity and architecture integrity protection**
 
-1. **landing-zone-architecture/**
-   - Defines scope, trust boundaries, blast radius, and governance
+Together, they show **end-to-end ownership of cloud security posture**.
 
-2. **architecture-decisions/**
-   - Records security tradeoffs and architectural judgment
+---
 
-3. **detection-architecture/**
-   - Explains how security signals are selected and interpreted
+## NDA-Safe Disclosure Statement
 
-4. **security-evidence/**
-   - Maps controls to verifiable evidence
+- No proprietary employer systems  
+- No internal tooling or naming  
+- No production secrets or identifiers  
+- No customer data  
 
-Existing folders provide **control implementations**:
-- `sentinel-alert/`
-- `devops-change-control/`
-- `devops-identity-trust/`
+All designs use **public Azure services, documented APIs, and reproducible patterns**.
 
-## Disclaimer
+This repository demonstrates **how I think and engineer**, not where I work.
 
-This repository is for demonstration purposes only.
-No employer systems, tenants, or identifiers are used.
+---
+
+## How to Read This Repository
+
+This repository has **two primary pillars**, each representing a different but connected security responsibility:
+
+1. **Preventative Security Architecture (Guardrails & Change Control)**  
+2. **Reactive & Enforced Security Response (Incident Playbooks / SOAR)**  
+
+You can review either pillar independently, but together they represent a **complete security lifecycle**.
+
+---
+
+## Repository Structure (High Level)
+
+├── devops-change-control/
+├── incident-playbooks/
+└── README.md
+
+
+---
+
+# Pillar 1 — Preventative Security Architecture  
+## DevOps Change Control & Guardrails
+
+📁 `devops-change-control/`
+
+### Why This Exists
+
+In regulated environments, **security cannot rely on detection alone**.  
+Unsafe infrastructure changes must be **prevented before they reach production**, even if they are approved by humans.
+
+This pillar focuses on **preventative controls** that operate **outside and above CI/CD**.
+
+---
+
+### What This Pillar Demonstrates
+
+- DevOps treated as a **privileged security boundary**
+- Human approval ≠ authorization
+- Azure Policy as **enforced guardrails**
+- Infrastructure as Code under governance
+- Centralized audit telemetry beyond Azure DevOps
+- Honest documentation of real-world failures
+
+---
+
+### Key Capabilities Shown
+
+- Azure DevOps pipelines with:
+  - What-If (advisory)
+  - Manual approval gates
+  - Enforced production deployment
+- Deny-based Azure Policy (not audit-only)
+- Log Analytics custom tables for approval telemetry
+- Modern Azure Monitor ingestion (DCE / DCR)
+- Policy enforcement surfaced as security signals
+
+This pillar answers the question:
+
+> **“How do we make sure insecure changes never exist?”**
+
+---
+
+# Pillar 2 — Reactive & Enforced Security Response  
+## Incident Playbooks (Sentinel SOAR)
+
+📁 `incident-playbooks/`
+
+### Why This Exists
+
+Even with strong guardrails, **security incidents still happen**:
+- privilege escalation
+- credential misuse
+- data access anomalies
+- identity drift
+
+This pillar focuses on **how regulated enterprises respond safely and decisively** using **Sentinel SOAR** — without breaking production.
+
+---
+
+### What This Pillar Demonstrates
+
+- High-signal detection engineering (KQL)
+- Sentinel analytics rules and automation
+- Logic App playbooks with enforcement logic
+- Human-in-the-loop vs automatic response decisions
+- Least-privilege IAM modeling for automation
+- Evidence-driven incident handling
+
+These are **not auto-close playbooks**.  
+They are **enforcement-grade controls**.
+
+---
+
+## Incident Playbook Projects
+
+### Project 1 — RBAC Privilege Escalation (Subscription Scope)
+Detects and contains **Tier-0 RBAC role assignments** using:
+- AzureActivity telemetry
+- Tag-based human approval
+- ARM API enforcement
+
+---
+
+### Project 2 — Key Vault RBAC Containment
+Responds to **secret access events** by:
+- identifying the principal and vault
+- removing vault-scope RBAC assignments
+- documenting containment in Sentinel
+
+---
+
+### Project 3 — Tier-0 CI/CD Secret Auto-Rotation
+Protects CI/CD supply chain credentials by:
+- classifying Tier-0 secrets
+- safely rotating Key Vault secret versions
+- preventing automation loops
+- documenting eradication actions
+
+---
+
+### Project 4 — Identity & Architecture Integrity Enforcement
+Protects the **security architecture itself**, including:
+- Conditional Access drift
+- PIM misuse or permanence
+- Landing zone guardrail bypass
+- Tier-0 vs Tier-1 enforcement decisions
+
+This project demonstrates **platform security ownership**.
+
+---
+
+## Common Engineering Principles (Across All Work)
+
+- Preventative > detective wherever possible
+- Control-plane telemetry first
+- Identity treated as Tier-0
+- Managed Identity over secrets
+- Explicit permission modeling
+- Idempotent, fail-safe automation
+- Evidence before claims
+
+---
+
+## Why This Matters in Aerospace & Regulated Environments
+
+Aerospace security requires:
+- separation of duties
+- enforced guardrails
+- immutable audit trails
+- predictable automation behavior
+- architecture-level integrity
+
+The combined projects in this repository show:
+- how unsafe states are prevented
+- how incidents are contained or eradicated
+- how identity and platform drift are controlled
+- how security systems withstand audits
+
+---
+
+## What This Repository Says About the Engineer
+
+A reviewer should conclude:
+
+- This engineer understands Azure deeply (control plane, identity, policy)
+- This engineer designs **preventative controls**, not just alerts
+- This engineer builds SOAR that is safe, reversible, and auditable
+- This engineer can operate in **regulated, high-impact environments**
+- This engineer documents failures honestly and learns from them
+
+---
+
+## Final Note
+
+This repository is intentionally structured as a **security architecture portfolio**, not a code dump.
+
+Every folder exists to answer one question:
+
+> **“Can this person be trusted to protect production in a regulated cloud?”**
